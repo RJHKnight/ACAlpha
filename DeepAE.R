@@ -2,14 +2,16 @@ library(keras)
 library(pracma)
 library(tidyverse)
 
+source("normaliser.R")
+
 # At initial run, we had 181 names in the universe
 # so we are looking at a compression factor of 11.3x
-epochs <- 200
+epochs <- 50
 
-returns <- createReturnsMatrix(closePrices)
-inputDimensions <- ncol(returns)
+#returns <- createReturnsMatrix(closePrices)
+inputDimensions <- ncol(returns.insample)
 
-returns.norm <- normalise(returns)
+returns.norm <- normalise(returns.insample)
 
 # 80/20 split
 numDates <- nrow(returns.norm)
@@ -22,15 +24,15 @@ returns.test <- returns.norm[-trainingIndex, ]
 model <- keras_model_sequential()
 model %>%
   layer_dense(units = i, activation = 'relu', input_shape = c(inputDimensions)) %>%
-  layer_dense(units = i-20, activation = 'relu', input_shape = c(inputDimensions)) %>%
-  layer_dense(units = i-40, activation = 'relu', input_shape = c(inputDimensions)) %>%
-  layer_dense(units = i-60, activation = 'relu', input_shape = c(inputDimensions)) %>%
-  layer_dense(units = i-40, activation = 'relu', input_shape = c(inputDimensions)) %>%
-  layer_dense(units = i-20, activation = 'relu', input_shape = c(inputDimensions)) %>%
+ # layer_dense(units = 60, activation = 'relu', input_shape = c(inputDimensions)) %>%
+#  layer_dense(units = 40, activation = 'relu', input_shape = c(inputDimensions)) %>%
+  layer_dense(units = 20, activation = 'relu', input_shape = c(inputDimensions)) %>%
+ # layer_dense(units = 40, activation = 'relu', input_shape = c(inputDimensions)) %>%
+#  layer_dense(units = 60, activation = 'relu', input_shape = c(inputDimensions)) %>%
   layer_dense(units = inputDimensions, activation = 'sigmoid')
 
 model %>% compile(
-  loss = loss_mean_squared_error,
+  loss = loss_mean_absolute_error,
   optimizer = optimizer_adadelta(),
   metrics = c('mae')
 )
@@ -48,13 +50,3 @@ history <- model %>% fit(
 plot(history)
 
 fullPrediction <- (model %>% predict(returns.norm))
-
-sym <- "RIO.AX"
-colNum <- which(colnames(returns) == "RIO.AX")
-
-RIO.predict <- denormalise(fullPrediction[, colNum], returns.mean, returns.sd)
-RIO.actual <- returns[, colNum]
-
-plot(RIO.predict, ylim = c(min(RIO.actual), max(RIO.actual)))
-lines(RIO.actual, col="blue")
-
