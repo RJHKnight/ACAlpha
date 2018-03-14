@@ -6,17 +6,17 @@ library(tidyverse)
 # so we are looking at a compression factor of 11.3x
 epochs <- 200
 
-returns <- createReturnsMatrix(closePrices)
-inputDimensions <- ncol(returns)
+returns <- createReturnsFrame(closePrices)
 
-returns.norm <- normalise(returns)
+returns <- addNormalisedValues(returns)
 
 # 80/20 split
-numDates <- nrow(returns.norm)
+returns.matrix <- getNormalisedMatrix(returns)
+numDates <- nrow(returns.matrix)
 sampleSize <- floor(0.8 * numDates)
 trainingIndex <- sample(seq_len(numDates), size = sampleSize)
-returns.train <- returns.norm[trainingIndex, ]
-returns.test <- returns.norm[-trainingIndex, ]
+returns.train <- returns.matrix[trainingIndex, ]
+returns.test <- returns.matrix[-trainingIndex, ]
 
 
 model <- keras_model_sequential()
@@ -47,14 +47,5 @@ history <- model %>% fit(
 
 plot(history)
 
-fullPrediction <- (model %>% predict(returns.norm))
-
-sym <- "RIO.AX"
-colNum <- which(colnames(returns) == "RIO.AX")
-
-RIO.predict <- denormalise(fullPrediction[, colNum], returns.mean, returns.sd)
-RIO.actual <- returns[, colNum]
-
-plot(RIO.predict, ylim = c(min(RIO.actual), max(RIO.actual)))
-lines(RIO.actual, col="blue")
+fullPrediction <- (model %>% predict(returns.matrix))
 

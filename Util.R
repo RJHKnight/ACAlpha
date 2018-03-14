@@ -1,3 +1,4 @@
+
 # Filter based on Median Absolute Deviation
 applyMadding <- function(x, constant = 5.6)
 {

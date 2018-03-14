@@ -1,14 +1,12 @@
-createReturnsMatrix <- function(closePrices) {
+createReturnsFrame <- function(closePrices) {
   
-  returns <- as.matrix(
+  returns <- 
     closePrices %>%
-      filter(!is.na(return)) %>%
-      mutate(return = return/closevolatility) %>%
-      arrange(date) %>%
-      select(-close, -closevolatility) %>%
-      spread(sym, return) %>%
-      select(-date)
-  )
+    filter(!is.na(return)) %>%
+    mutate(return = return/closevolatility) %>%
+    arrange(date) %>%
+    select(-close, -closevolatility) %>%
+    spread(sym, return) 
   
   # TODO: Make this tidy! Group_by?
   # Remove if more than 20 returns are missing over the entire duration

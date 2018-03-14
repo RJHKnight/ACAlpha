@@ -2,8 +2,6 @@
 
 symList <- getASXUniverse()
 
-
-
 closePrices.oos <- getClosePrices(symList,
                                   startDate = "2018.01.01", 
                                   endDate = "2018.02.18")
