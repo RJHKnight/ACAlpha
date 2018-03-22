@@ -1,9 +1,13 @@
-addNormalisedValues <- function(returnsFrame) {
+library(pracma)
+library(tidyverse)
+
+addNormalisedValues <- function(returnsFrame, matrix.input = FALSE) {
  
   input.matrix <- 
     returnsFrame %>%
-    dplyr::select(-date) %>%
+    dplyr::select(-starts_with("date")) %>%
     as.matrix()
+
   
   # And normalise
   input.mean <- mean(input.matrix)
@@ -30,6 +34,20 @@ getNormalisedMatrix <- function(returnsFrame) {
     select(contains("norm")) %>%
     as.matrix()
 
+}
+
+addPredictions <- function(returnsFrame, predictions, denormalise = TRUE) {
+  
+  if (denormalise) {
+    predictions <- denormaliseMatrix(predictions, returnsFrame$input.mean[1], returnsFrame$input.sd[1])
+  }
+  
+  if( is.null(colnames(predictions)))
+    colnames(predictions) <- 1:ncol(predictions)
+  
+  colnames(predictions) <- paste(colnames(predictions), "pred", sep = ".")
+  
+  return (cbind(returnsFrame, predictions))
 }
 
 
