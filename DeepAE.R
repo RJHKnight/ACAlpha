@@ -5,7 +5,7 @@ library(tidyverse)
 source("normaliser.R")
 source("GenerateToyDataSet.R")
 
-epochs <- 50
+epochs <- 100
 
 returns <- createReturnsFrame(closePrices)
 #returns <- generateToyDataSet()
@@ -64,4 +64,6 @@ returns %>%
   ggplot(., aes(i, value, colour=type)) +
   geom_line() + 
   facet_wrap(~ panel1, scales = "free_x", ncol = 1)
+  
+  
   
