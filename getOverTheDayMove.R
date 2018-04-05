@@ -11,19 +11,21 @@ getOverTheDayMove <- function(syms, dates) {
   dailyData$move <- 10000 * (dailyData$close - dailyData$open) / dailyData$open
   
   # Add volatility
-  closevolatility <- getSummaryData(
+  volatility <- getSummaryData(
     symList = syms, 
+    endDate = endDate,
     noDays = 20,
-    columns = "closevolatility"
+    columns = "meanhighlowdiff"
   )
   
   dailyData %<>%
     left_join(
-      closevolatility, by = "sym")
+      volatility, by = "sym")
 
   dailyData %<>%
-    mutate(normalisedMove = move / closevolatility) %>%
-    select(sym, date, normalisedMove)
+    mutate(normalisedMove = move / (10000 * meanhighlowdiff)) %>%
+    select(sym, date.x, normalisedMove) %>%
+    dplyr::rename(date = date.x)
   
   return (dailyData)
   

@@ -7,7 +7,7 @@ library(scales)
 
 source("calculateWealthAccumulation.R")
 
-numberOfPositionsPerSide = 5
+numberOfPositionsPerSide = 2
 
 returns.long <- 
   returns %>%
