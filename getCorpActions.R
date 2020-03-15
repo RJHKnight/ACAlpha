@@ -7,7 +7,7 @@ getCorpActions <- function(syms, dates, daysBefore = 3) {
   startDate = offsetByWorkingDate(min(dates), daysBefore)
   endDate = max(dates)
   
-  corpActions <- TicR::getCorpActions(syms, 
+  corpActions <- TicR::ticRequest("getCorpActions", syms, 
                              startDate = format(startDate, "%Y.%m.%d"),
                              endDate = format(endDate, "%Y.%m.%d"),
                              columns ="earnings")

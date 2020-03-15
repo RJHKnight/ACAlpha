@@ -4,6 +4,7 @@ library(tidyverse)
 
 source("normaliser.R")
 source("GenerateToyDataSet.R")
+source("CreateReturnsFrame.R")
 
 epochs <- 100
 

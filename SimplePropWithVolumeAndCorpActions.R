@@ -6,8 +6,14 @@ library(magrittr)
 library(scales)
 
 source("calculateWealthAccumulation.R")
+source("getNormalisedVolume.R")
+source("getCorpActions.R")
 
-numberOfPositionsPerSide = 2
+numberOfPositionsPerSide = 100
+
+if (exists("returns.long")) {
+  rm(returns.long)
+}
 
 returns.long <- 
   returns %>%
@@ -73,7 +79,7 @@ strategyReturns$cumReturn <- cumsum(strategyReturns$return)
 strategyReturnsWithVolAndCorp$type <- paste("VolCorpKnockout (", minVol, "->", maxVol, ")", sep = "")
 strategyReturnsWithVolAndCorp$cumReturn <- cumsum(strategyReturnsWithVolAndCorp$return)
 
-ggplot(rbind(strategyReturns, strategyReturnsWithVolAndCorp), 
+ggplot(strategyReturnsWithVolAndCorp, 
        aes(date, cumReturn, colour=type, group=type)) + 
   geom_line() + 
   scale_x_datetime(breaks = date_breaks("1 month"), date_labels = "%Y.%m")

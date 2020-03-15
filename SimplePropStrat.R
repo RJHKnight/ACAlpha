@@ -25,9 +25,10 @@ returns.long <-
 returns.long$alpha <- (returns.long$predictedReturn - returns.long$return)
 
 returns.long %<>%
+  arrange(date) %>%
   group_by(date) %>%
-  filter(abs(predictedReturn) < 0.15) %>%
-  mutate(rank = rank(predictedReturn, ties.method = "first")) %>%
+  filter(abs(alpha) < 0.15) %>%
+  mutate(rank = rank(alpha, ties.method = "first")) %>%
   mutate(longPosition = rank > max(rank) - numberOfPositionsPerSide,
          shortPosition = rank < numberOfPositionsPerSide + 1)
 
@@ -46,3 +47,12 @@ for (i in (1:length(allDates))) {
   thisReturn <- calculateWealthAccumulation(thisLongSyms, thisShortSyms, closePrices, thisDate)
   strategyReturns[i,2] <- thisReturn
 }
+
+
+strategyReturns$type <- "Basic"
+strategyReturns$cumReturn <- cumsum(strategyReturns$return)
+
+ggplot(strategyReturns, 
+       aes(date, cumsum(return), colour=type, group=type)) + 
+  geom_line() + 
+  scale_x_datetime(breaks = date_breaks("3 month"), date_labels = "%Y.%m")
